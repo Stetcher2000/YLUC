@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Afterglow — Stories & Messages</title>
+  <style>
+    :root {
+      --ink: #211b35;
+      --muted: #817b91;
+      --paper: #fbf9ff;
+      --panel: #fff;
+      --line: #eeeaf5;
+      --violet: #7656e8;
+      --pink: #f16ba8;
+      --mint: #8be1c3;
+      --shadow: 0 12px 36px #38265d12;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, #f3eaff 0, transparent 28rem),
+        var(--paper);
+      font: 15px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 245px 1fr; }
+    aside {
+      height: 100vh; position: sticky; top: 0; padding: 28px 18px;
+      background: #ffffffc9; border-right: 1px solid var(--line);
+      display: flex; flex-direction: column; gap: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px; }
+    .logo {
+      width: 38px; height: 38px; border-radius: 13px;
+      display: grid; place-items: center; color: white; font-weight: 900;
+      background: linear-gradient(135deg, var(--violet), var(--pink));
+      box-shadow: 0 7px 16px #7656e844;
+    }
+    .brand strong { font-size: 18px; letter-spacing: -.5px; }
+    .brand small { display: block; color: var(--muted); font-size: 11px; }
+    .nav { display: grid; gap: 7px; }
+    .nav button {
+      border: 0; background: transparent; color: #777187; text-align: left;
+      padding: 12px 14px; border-radius: 13px; display: flex; gap: 13px;
+      align-items: center; font-weight: 650;
+    }
+    .nav button.active, .nav button:hover { background: #f0ebff; color: var(--violet); }
+    .nav .icon { width: 20px; text-align: center; font-size: 18px; }
+    .side-bottom { margin-top: auto; }
+    .profile-mini { display: flex; align-items: center; gap: 10px; padding: 10px; }
+    .avatar {
+      width: 42px; height: 42px; border-radius: 50%; display: grid;
+      place-items: center; color: white; font-weight: 800; flex: 0 0 auto;
+      background: linear-gradient(145deg, #ffb58b, #ee6d9e);
+    }
+    .profile-mini small { color: var(--muted); display: block; }
+    main { min-width: 0; padding: 28px clamp(18px, 4vw, 54px) 50px; }
+    .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+    .search {
+      max-width: 480px; width: 100%; position: relative;
+    }
+    .search span { position: absolute; left: 16px; top: 11px; color: #9992a8; }
+    .search input {
+      width: 100%; border: 1px solid var(--line); background: white;
+      border-radius: 14px; padding: 12px 15px 12px 43px; outline: none;
+    }
+    .search input:focus { border-color: #b6a4ff; box-shadow: 0 0 0 3px #7656e81b; }
+    .top-actions { margin-left: auto; display: flex; gap: 10px; }
+    .icon-btn {
+      border: 1px solid var(--line); background: white; width: 43px; height: 43px;
+      border-radius: 14px; color: var(--ink); font-size: 17px;
+    }
+    .welcome { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+    h1 { margin: 0; font-size: clamp(27px, 4vw, 36px); letter-spacing: -1.2px; }
+    .sub { margin: 6px 0 0; color: var(--muted); }
+    .primary {
+      border: 0; border-radius: 13px; padding: 12px 17px; color: white;
+      background: linear-gradient(110deg, var(--violet), #9974f2);
+      font-weight: 750; box-shadow: 0 8px 18px #7656e833;
+    }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; }
+    h2 { font-size: 17px; margin: 0; letter-spacing: -.3px; }
+    .text-btn { border: 0; background: none; color: var(--violet); font-weight: 700; }
+    .stories { display: flex; gap: 18px; overflow-x: auto; padding: 4px 2px 10px; }
+    .story { min-width: 76px; text-align: center; border: 0; background: none; padding: 0; color: var(--ink); }
+    .ring {
+      width: 68px; height: 68px; padding: 3px; margin: auto auto 7px;
+      border-radius: 50%; background: linear-gradient(135deg, #f3a4c8, #8062ed);
+    }
+    .ring.seen { background: #dedbe5; }
+    .story-face {
+      height: 100%; border: 3px solid white; border-radius: 50%;
+      display: grid; place-items: center; color: white; font-weight: 800;
+      background: linear-gradient(145deg, #f7ad8d, #a36ce4);
+    }
+    .story-name { display: block; font-size: 12px; white-space: nowrap; }
+    .add-story .story-face { background: #f0ebff; color: var(--violet); font-size: 25px; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .8fr); gap: 22px; }
+    .card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+    .feed-card { overflow: hidden; }
+    .feed-cover {
+      min-height: 205px; display: grid; place-items: center; position: relative;
+      color: white; background:
+        linear-gradient(120deg, #30244f55, #30244f10),
+        radial-gradient(circle at 70% 35%, #ffd0a8 0 9%, transparent 10%),
+        linear-gradient(135deg, #e68aa9, #8a6ce3 55%, #423c70);
+    }
+    .feed-cover::before, .feed-cover::after {
+      content: ""; position: absolute; width: 130px; height: 130px; border-radius: 50%;
+      background: #ffdfb533; filter: blur(2px);
+    }
+    .feed-cover::before { left: 14%; bottom: -58px; }
+    .feed-cover::after { right: 13%; top: -58px; }
+    .cover-label { z-index: 1; text-align: center; text-shadow: 0 2px 12px #24183a66; }
+    .cover-label strong { display: block; font-size: 25px; }
+    .cover-label span { font-size: 13px; opacity: .9; }
+    .feed-body { padding: 16px 18px 18px; }
+    .author { display: flex; align-items: center; gap: 10px; }
+    .author .avatar { width: 36px; height: 36px; font-size: 12px; }
+    .author small { display: block; color: var(--muted); }
+    .feed-caption { margin: 14px 0; }
+    .feed-actions { display: flex; gap: 18px; color: #777187; }
+    .feed-actions button { border: 0; background: none; color: inherit; padding: 0; }
+    .feed-actions button:hover { color: var(--pink); }
+    .chat-card { padding: 18px; }
+    .chat-row {
+      display: flex; align-items: center; gap: 11px; padding: 13px 0;
+      border-bottom: 1px solid #f2eff6; cursor: pointer;
+    }
+    .chat-row:last-child { border-bottom: 0; }
+    .chat-row .avatar { width: 42px; height: 42px; font-size: 12px; }
+    .chat-info { min-width: 0; flex: 1; }
+    .chat-info strong { display: block; font-size: 13px; }
+    .chat-info small { display: block; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .time { color: #a29bad; font-size: 11px; align-self: flex-start; }
+    .dot { width: 8px; height: 8px; background: var(--violet); border-radius: 50%; }
+    .online { position: relative; }
+    .online::after { content: ""; position: absolute; right: 0; bottom: 1px; width: 10px; height: 10px; border: 2px solid white; border-radius: 50%; background: #55c999; }
+    .empty { display: none; padding: 25px; color: var(--muted); text-align: center; }
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px);
+      background: #241d38; color: white; padding: 12px 18px; border-radius: 12px;
+      opacity: 0; pointer-events: none; transition: .2s; box-shadow: var(--shadow);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 850px) {
+      .app { grid-template-columns: 76px 1fr; }
+      aside { padding: 22px 10px; align-items: center; }
+      .brand { padding: 0; }
+      .brand > div:last-child, .nav .label, .profile-mini > div:last-child { display: none; }
+      .nav { width: 100%; }
+      .nav button { justify-content: center; padding: 13px 8px; }
+      .profile-mini { padding: 0; }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .app { display: block; padding-bottom: 66px; }
+      aside {
+        height: 62px; position: fixed; z-index: 5; top: auto; bottom: 0; left: 0; right: 0;
+        width: 100%; padding: 5px 10px; border-right: 0; border-top: 1px solid var(--line);
+        background: #fffF; backdrop-filter: blur(12px);
+      }
+      .brand, .side-bottom { display: none; }
+      .nav { display: flex; justify-content: space-around; }
+      .nav button { flex: 1; padding: 8px 2px; }
+      main { padding: 20px 16px 30px; }
+      .topbar { margin-bottom: 22px; }
+      .welcome { align-items: flex-start; flex-direction: column; }
+      .welcome .primary { width: 100%; }
+      .feed-cover { min-height: 175px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo">a</div>
+        <div><strong>afterglow</strong><small>little moments, shared</small></div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-page="Home"><span class="icon">⌂</span><span class="label">Home</span></button>
+        <button data-page="Messages"><span class="icon">◉</span><span class="label">Messages</span></button>
+        <button data-page="Discover"><span class="icon">✦</span><span class="label">Discover</span></button>
+        <button data-page="Memories"><span class="icon">▣</span><span class="label">Memories</span></button>
+        <button data-page="Profile"><span class="icon">♙</span><span class="label">Profile</span></button>
+      </nav>
+
+      <div class="side-bottom">
+        <div class="profile-mini">
+          <div class="avatar">JD</div>
+          <div><strong>Jamie Davis</strong><small>@jamie.d</small></div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <label class="search">
+          <span>⌕</span>
+          <input id="search" type="search" placeholder="Search friends and chats..." />
+        </label>
+        <div class="top-actions">
+          <button class="icon-btn" aria-label="Notifications" onclick="notify('You’re all caught up ✨')">♧</button>
+          <button class="icon-btn" aria-label="Settings" onclick="notify('Settings coming soon')">⚙</button>
+        </div>
+      </div>
+
+      <section class="welcome">
+        <div>
+          <h1 id="greeting">Good afternoon, Jamie ✨</h1>
+          <p class="sub">A little peek at what your friends are up to.</p>
+        </div>
+        <button class="primary" onclick="notify('Camera feature coming soon 📸')">＋ Share a moment</button>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Stories for you</h2>
+          <button class="text-btn" onclick="notify('Showing all stories')">See all</button>
+        </div>
+        <div class="stories" id="stories">
+          <button class="story add-story" data-search="your story">
+            <div class="ring seen"><div class="story-face">＋</div></div>
+            <span class="story-name">Your story</span>
+          </button>
+          <button class="story" data-search="maya chen">
+            <div class="ring"><div class="story-face" style="background:linear-gradient(145deg,#f5b38c,#e66d8d)">MC</div></div>
+            <span class="story-name">Maya</span>
+          </button>
+          <button class="story" data-search="leo park">
+            <div class="ring"><div class="story-face" style="background:linear-gradient(145deg,#7bd6c1,#4e81c9)">LP</div></div>
+            <span class="story-name">Leo</span>
+          </button>
+          <button class="story" data-search="amira ali">
+            <div class="ring"><div class="story-face" style="background:linear-gradient(145deg,#e8a4d5,#7356bd)">AA</div></div>
+            <span class="story-name">Amira</span>
+          </button>
+          <button class="story" data-search="noah williams">
+            <div class="ring seen"><div class="story-face" style="background:linear-gradient(145deg,#f1c16e,#e77d65)">NW</div></div>
+            <span class="story-name">Noah</span>
+          </button>
+          <button class="story" data-search="zoe kim">
+            <div class="ring"><div class="story-face" style="background:linear-gradient(145deg,#a2d79c,#509d8c)">ZK</div></div>
+            <span class="story-name">Zoe</span>
+          </button>
+          <button class="story" data-search="eli brooks">
+            <div class="ring"><div class="story-face" style="background:linear-gradient(145deg,#f4a082,#bd5d8f)">EB</div></div>
+            <span class="story-name">Eli</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <section>
+          <div class="section-head"><h2>Today’s moments</h2><button class="text-btn" onclick="notify('You’re viewing the latest moments')">Latest</button></div>
+          <article class="card feed-card" data-search="maya chen golden hour beach">
+            <div class="feed-cover">
+              <div class="cover-label"><strong>golden hour ✦</strong><span>somewhere by the coast</span></div>
+            </div>
+            <div class="feed-body">
+              <div class="author">
+                <div class="avatar">MC</div>
+                <div><strong>Maya Chen</strong><small>12 minutes ago · Friends</small></div>
+              </div>
+              <p class="feed-caption">Chasing the last bit of sunshine 🌅</p>
+              <div class="feed-actions">
+                <button onclick="like(this)">♡ <span>24</span></button>
+                <button onclick="notify('Reply composer coming soon')">◌ Reply</button>
+                <button onclick="notify('Moment shared')">↗ Share</button>
+              </div>
+            </div>
+          </article>
+          <article class="card feed-card" data-search="leo park coffee morning">
+            <div class="feed-cover" style="background:linear-gradient(135deg,#5f7c77,#b4a27c 55%,#f3c28c)">
+              <div class="cover-label"><strong>slow mornings ☕</strong><span>the usual little ritual</span></div>
+            </div>
+            <div class="feed-body">
+              <div class="author">
+                <div class="avatar" style="background:linear-gradient(145deg,#7bd6c1,#4e81c9)">LP</div>
+                <div><strong>Leo Park</strong><small>38 minutes ago · Friends</small></div>
+              </div>
+              <p class="feed-caption">Taking the scenic route today.</p>
+              <div class="feed-actions">
+                <button onclick="like(this)">♡ <span>8</span></button>
+                <button onclick="notify('Reply composer coming soon')">◌ Reply</button>
+                <button onclick="notify('Moment shared')">↗ Share</button>
+              </div>
+            </div>
+          </article>
+          <div class="empty" id="feedEmpty">No moments match your search.</div>
+        </section>
+
+        <section>
+          <div class="section-head"><h2>Recent chats</h2><button class="text-btn" onclick="notify('Opening all chats')">View all</button></div>
+          <div class="card chat-card" id="chats">
+            <div class="chat-row" data-search="maya chen photo from yesterday">
+              <div class="avatar online">MC</div>
+              <div class="chat-info"><strong>Maya Chen</strong><small>Sent you a photo</small></div>
+              <span class="time">2m</span><span class="dot"></span>
+            </div>
+            <div class="chat-row" data-search="leo park voice note">
+              <div class="avatar" style="background:linear-gradient(145deg,#7bd6c1,#4e81c9)">LP</div>
+              <div class="chat-info"><strong>Leo Park</strong><small>Voice note · 0:08</small></div>
+              <span class="time">18m</span>
+            </div>
+            <div class="chat-row" data-search="amira ali you: haha">
+              <div class="avatar" style="background:linear-gradient(145deg,#e8a4d5,#7356bd)">AA</div>
+              <div class="chat-info"><strong>Amira Ali</strong><small>You: haha, absolutely</small></div>
+              <span class="time">1h</span>
+            </div>
+            <div class="chat-row" data-search="noah williams streak">
+              <div class="avatar" style="background:linear-gradient(145deg,#f1c16e,#e77d65)">NW</div>
+              <div class="chat-info"><strong>Noah Williams</strong><small>🔥 Keeping the streak alive</small></div>
+              <span class="time">3h</span>
+            </div>
+            <div class="chat-row" data-search="zoe kim plans">
+              <div class="avatar" style="background:linear-gradient(145deg,#a2d79c,#509d8c)">ZK</div>
+              <div class="chat-info"><strong>Zoe Kim</strong><small>Are we still on for Friday?</small></div>
+              <span class="time">5h</span>
+            </div>
+            <div class="empty" id="chatEmpty">No chats match your search.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function notify(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function like(button) {
+      const count = button.querySelector("span");
+      const liked = button.dataset.liked === "true";
+      button.dataset.liked = String(!liked);
+      button.firstChild.textContent = liked ? "♡ " : "♥ ";
+      count.textContent = Number(count.textContent) + (liked ? -1 : 1);
+      button.style.color = liked ? "" : "#ed5e9c";
+    }
+
+    document.querySelectorAll(".nav button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector(".nav button.active")?.classList.remove("active");
+        button.classList.add("active");
+        const page = button.dataset.page;
+        if (page !== "Home") notify(page + " view selected");
+      });
+    });
+
+    document.querySelectorAll(".story").forEach(story => {
+      story.addEventListener("click", () => {
+        const name = story.querySelector(".story-name").textContent;
+        notify(name === "Your story" ? "Create your first story ✨" : `Opening ${name}’s story`);
+      });
+    });
+
+    document.querySelectorAll(".chat-row").forEach(row => {
+      row.addEventListener("click", () => {
+        notify(`Opening chat with ${row.querySelector("strong").textContent}`);
+      });
+    });
+
+    document.getElementById("search").addEventListener("input", event => {
+      const query = event.target.value.trim().toLowerCase();
+      document.querySelectorAll(".story, .chat-row, .feed-card").forEach(item => {
+        item.hidden = query && !item.dataset.search.includes(query);
+      });
+      const noChats = ![...document.querySelectorAll(".chat-row")].some(x => !x.hidden);
+      const noFeed = ![...document.querySelectorAll(".feed-card")].some(x => !x.hidden);
+      document.getElementById("chatEmpty").style.display = noChats ? "block" : "none";
+      document.getElementById("feedEmpty").style.display = noFeed ? "block" : "none";
+    });
+
+    const hour = new Date().getHours();
+    document.getElementById("greeting").textContent =
+      `${hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"}, Jamie ✨`;
+  </script>
+</body>
+</html>
